@@ -1,0 +1,2 @@
+vectors = getData();
+processFFT(vectors);
