@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">DataCollection</string>
+    <string name="stay">hand</string>
+    <string name="walk">coat</string>
+    <string name="turn">trousers</string>
+    <string name="upstairs">upstairs</string>
+    <string name="downstairs">downstairs</string>
+
+</resources>
