@@ -1,8 +1,10 @@
 package me.spiegel.paz.turndetect;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -74,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
                 endButton.setEnabled(false);
             }
         });
+        showNotification();
     }
 
     private void showDialogLoading(String title, final int max) {
@@ -109,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
                     if(i > 10)
                         break;
                     try {
-                        Thread.sleep(1280);
+                        Thread.sleep(1000);
                         dialog.incrementProgressBy(1);
                         i++;
                     } catch(InterruptedException e) {
@@ -143,6 +146,21 @@ public class MainActivity extends AppCompatActivity {
             super.handleMessage(msg);
         }
     };
+
+    private void showNotification(){
+        final AlertDialog.Builder normalDialog =
+                new AlertDialog.Builder(MainActivity.this);
+        normalDialog.setTitle("提示：");
+        normalDialog.setMessage("开始后需用5s来计算重力，之后要用10s的数据来消除可能产生的误差。\n拐弯之间需间隔5s");
+        normalDialog.setPositiveButton("我知道了",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //...To-do
+                    }
+                });
+        normalDialog.show();
+    }
 
     private DecimalFormat df = new DecimalFormat("#0.00");
     private TurnJudger.FeatureReady featureReady = new TurnJudger.FeatureReady() {

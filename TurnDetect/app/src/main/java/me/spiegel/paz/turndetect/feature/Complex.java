@@ -30,8 +30,8 @@ package me.spiegel.paz.turndetect.feature;
  ******************************************************************************/
 
 public class Complex {
-    private final double re;   // the real part
-    private final double im;   // the imaginary part
+    private double re;   // the real part
+    private double im;   // the imaginary part
 
     // create a new object with the given real and imaginary parts
     public Complex(double real, double imag) {
@@ -93,6 +93,9 @@ public class Complex {
     // return the real or imaginary part
     public double re() { return re; }
     public double im() { return im; }
+
+    public void setRe(double re) {this.re = re;}
+    public void setIm(double im) {this.im = im;}
 
     // return a / b
     public Complex divides(Complex b) {

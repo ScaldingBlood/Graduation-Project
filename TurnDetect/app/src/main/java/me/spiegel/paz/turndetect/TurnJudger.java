@@ -43,7 +43,7 @@ public class TurnJudger {
                 smallWindow.remove(0);
 
                 featureReady.angleCallback(res);
-                if(Math.abs(res) > 70) {
+                if(Math.abs(res) > 65) {
                     lastFlag = 0;
                     stopCountS = 0;
                     if(!stopS) {

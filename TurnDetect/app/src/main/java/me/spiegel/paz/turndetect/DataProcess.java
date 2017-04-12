@@ -22,6 +22,7 @@ public class DataProcess {
     Logger logger = Logger.getLogger("DATAPROCESS");
     private List<Double> verticalGyrList;
     private DetectWalkCallback callback;
+    private boolean posOrNeg = false;
 
     public DataProcess(DetectWalkCallback callback) {
         allAccData = new ArrayList<>();
@@ -37,6 +38,7 @@ public class DataProcess {
         allGyrData.clear();
         verticalGyrList.clear();
         start = 1;
+        posOrNeg = false;
         Gravity.init();
     }
 
@@ -75,33 +77,60 @@ public class DataProcess {
             verticalGyrList.add((gravity.getX() * frameGyr.get(i).getX() + gravity.getY() * frameGyr.get(i).getY() + gravity.getZ() * frameGyr.get(i).getZ())
                     / gravity.module());
         }
-        if(verticalGyrList.size() < 10 * halfFrameLen)
-            return ang;
-        else {
-            double[] tmp = new double[verticalGyrList.size()/10];
-            double tmpSum = 0;
-            for(int i = 0, j = 0; i < verticalGyrList.size(); i++) {
-                tmpSum += verticalGyrList.get(i);
-                if((i + 1) % 10 == 0) {
-                    tmp[j++] = tmpSum / 10;
-                    tmpSum = 0;
+
+        if(verticalGyrList.size() < 8 * halfFrameLen) { // 8*128=1024
+            if(verticalGyrList.size() == 7 * halfFrameLen) { // judge left or right, in order to adjust the angle.
+                int neg = 0;
+                int pos = 0;
+                for(int i = 0; i < 7 * halfFrameLen; i++) {
+                    if(verticalGyrList.get(i) > 0)
+                        pos++;
+                    else
+                        neg++;
                 }
+                if(pos > neg)
+                    posOrNeg = true;
+            }
+            return ang;
+        }
+        else {
+//            double[] tmp = new double[verticalGyrList.size()/10];
+//            double tmpSum = 0;
+//            for(int i = 0, j = 0; i < verticalGyrList.size(); i++) {
+//                tmpSum += verticalGyrList.get(i);
+//                if((i + 1) % 10 == 0) {
+//                    tmp[j++] = tmpSum / 10;
+//                    tmpSum = 0;
+//                }
+//            }
+            double[] tmp = new double[verticalGyrList.size()];
+            for(int i = 0; i < verticalGyrList.size(); i++) {
+                tmp[i] = verticalGyrList.get(i);
             }
             Complex[] res = FFT.FFTTransform(tmp);
-            for(int i = 9; i < 120; i++) {
-                if(res[i].re() > 40) {
-                    logger.info(i + " " + res[i].re() + "\n");
+            boolean affected = false;
+            for(int i = 6; i < 1021; i++) {
+                if(res[i].re() > 30) {
                     callback.detectedWalk();
+                    affected = true;
                 }
-                res[i] = new Complex(0, 0);
+                res[i].setRe(0);
+                res[i].setIm(0);
             }
             Complex[] after = FFT.ifft(res);
-            for(int i = 0; i < 12; i++) {
+            for(int i = 0; i < 128; i++) {
                 ang += (after[after.length -1 - i]).re();
             }
-            ang = ang * 0.1 * 180 / Math.PI;
-            logger.info(String.valueOf(Math.abs(ang)));
+//            double angOrigin = 0;
+//            for(int i = 0; i < 128; i++) {
+//                angOrigin += verticalGyrList.get(1023 - i);
+//            }
+            ang *= 0.01 * 180 / Math.PI;
+//            angOrigin *= 0.01 * 180 / Math.PI;
+//            logger.info(String.valueOf(ang) + "  " + String.valueOf(angOrigin));
             verticalGyrList = verticalGyrList.subList(halfFrameLen, verticalGyrList.size());
+            if(affected)
+                ang = ang + (posOrNeg ? -1 : 1);
             return ang;
         }
 
