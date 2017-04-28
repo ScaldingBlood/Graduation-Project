@@ -4,6 +4,7 @@ import android.content.Context;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Created by paz on 17-3-30.
@@ -12,6 +13,7 @@ public class TurnJudger {
     private static final int smallWindowSize = 4;
     private static final int largeWindowSize = 20;
     private ArrayList<Double> smallWindow;
+    private ArrayList<Double> smallWindowOrigin;
     private ArrayList<Double> largeWindow;
     private Context context;
     private SensorDataTimer sensorDataTimer;
@@ -23,9 +25,10 @@ public class TurnJudger {
     private int stopCountS;
     private int stopCountL;
     private int lastFlag;
+    private Logger logger = Logger.getLogger("comp");
 
     public interface FeatureReady {
-        void angleCallback(double angle);
+        void angleCallback(double angle[]);
         void largeCallback(double angle);
         void turnCallback(int count);
     }
@@ -33,16 +36,24 @@ public class TurnJudger {
     private SensorDataTimer.SensorDataCallback sensorDataCallback = new SensorDataTimer.SensorDataCallback() {
         @Override
         public void onAllSensorData(ArrayList<SensorDataNode> acc, ArrayList<SensorDataNode> gyr) {
-            double ang = dataProcess.process(acc, gyr);
+//            long secs = System.currentTimeMillis();
+            double[] t = dataProcess.process(acc, gyr);
+            double ang = t[0];
+            double angOrigin = t[1];
             if(ang == 0)
                 return;
             smallWindow.add(ang);
+            smallWindowOrigin.add(angOrigin);
             largeWindow.add(ang);
             if(smallWindow.size() == smallWindowSize) {
                 double res = getSum(smallWindow);
-                smallWindow.remove(0);
+                double resOrigin = getSum(smallWindowOrigin);
+                logger.info(res + " " + resOrigin);
 
-                featureReady.angleCallback(res);
+                smallWindow.remove(0);
+                smallWindowOrigin.remove(0);
+
+                featureReady.angleCallback(new double[]{res, resOrigin});
                 if(Math.abs(res) > 65) {
                     lastFlag = 0;
                     stopCountS = 0;
@@ -79,7 +90,7 @@ public class TurnJudger {
                 }
 
             }
-
+//            logger.info("time + " + (System.currentTimeMillis() - secs));
         }
     };
 
@@ -88,6 +99,7 @@ public class TurnJudger {
         this.featureReady = featureReady;
         dataProcess = new DataProcess(callback);
         smallWindow = new ArrayList<>();
+        smallWindowOrigin = new ArrayList<>();
         largeWindow = new ArrayList<>();
         sensorDataTimer = new SensorDataTimer(context, sensorDataCallback);
     }
@@ -100,6 +112,7 @@ public class TurnJudger {
         turnCount = 0;
         lastFlag = 0;
         smallWindow.clear();
+        smallWindowOrigin.clear();
         largeWindow.clear();
         dataProcess.init();
         sensorDataTimer.start();
@@ -120,10 +133,11 @@ public class TurnJudger {
     private DataProcess.DetectWalkCallback callback = new DataProcess.DetectWalkCallback() {
         @Override
         public void detectedWalk() {
-            largeWindow.clear();
-            stopL = false;
-            stopCountL = 0;
-            lastFlag = 0;
+            if(!largeWindow.isEmpty())
+                largeWindow.remove(largeWindow.size() - 1);
+//            stopL = false;
+//            stopCountL = 0;
+//            lastFlag = 0;
         }
     };
 }

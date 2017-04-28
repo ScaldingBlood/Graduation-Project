@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView turnText;
     private ListView listView;
     private List<Double> angleList;
+    private List<Double> angleList2;
     private List<Double> largeList;
     private int turnCount;
     private SimpleAdapter adapter;
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         angleList = new ArrayList<>();
+        angleList2 = new ArrayList<>();
         largeList = new ArrayList<>();
         turnCount = 0;
         turnJudger = new TurnJudger(this, featureReady);
@@ -45,8 +47,8 @@ public class MainActivity extends AppCompatActivity {
         listView = (ListView) findViewById(R.id.angle_list);
         list = new ArrayList<>();
 
-        adapter = new SimpleAdapter(this, list, R.layout.list_item, new String[]{"seconds", "angle", "largeAngle"},
-                new int[]{R.id.date_view, R.id.angle_view, R.id.large_angle_view});
+        adapter = new SimpleAdapter(this, list, R.layout.list_item, new String[]{"seconds", "angle", "angle2", "largeAngle"},
+                new int[]{R.id.date_view, R.id.angle_view, R.id.angle_view2, R.id.large_angle_view});
         View headView = getLayoutInflater().inflate(R.layout.list_header, null, false);
 
         listView.addHeaderView(headView);
@@ -58,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
                 turnText.setText("0");
                 list.clear();
                 angleList.clear();
+                angleList2.clear();
                 largeList.clear();
                 adapter.notifyDataSetChanged();
                 turnJudger.start();
@@ -129,10 +132,13 @@ public class MainActivity extends AppCompatActivity {
             if(msg.what == 1) {
                 turnText.setText(String.valueOf(turnCount));
             } else if(msg.what == 2) {
-                angleList.add(Double.valueOf((String)msg.obj));
+                double[] d = (double[])msg.obj;
+                angleList.add(Double.valueOf(df.format(d[0])));
+                angleList2.add(Double.valueOf(df.format(d[1])));
                 Map<String, Object> map = new HashMap<>();
                 map.put("seconds", df.format((angleList.size()) * 1.28));
                 map.put("angle", df.format(angleList.get(angleList.size() -1)));
+                map.put("angle2", df.format(angleList2.get(angleList2.size() - 1)));
                 map.put("largeAngle", df.format(0));
                 list.add(0, map);
                 adapter.notifyDataSetChanged();
@@ -165,10 +171,10 @@ public class MainActivity extends AppCompatActivity {
     private DecimalFormat df = new DecimalFormat("#0.00");
     private TurnJudger.FeatureReady featureReady = new TurnJudger.FeatureReady() {
         @Override
-        public void angleCallback(double angle) {
+        public void angleCallback(double angle[]) {
             Message msg = new Message();
             msg.what = 2;
-            msg.obj = df.format(angle);
+            msg.obj = angle;
             handler.sendMessage(msg);
         }
 

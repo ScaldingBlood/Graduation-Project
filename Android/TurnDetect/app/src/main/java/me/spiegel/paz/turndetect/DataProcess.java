@@ -42,16 +42,16 @@ public class DataProcess {
         Gravity.init();
     }
 
-    public double process(ArrayList<SensorDataNode> acc, ArrayList<SensorDataNode> gyr) {
+    public double[] process(ArrayList<SensorDataNode> acc, ArrayList<SensorDataNode> gyr) {
         if(allAccData == null) {
             allAccData = acc;
             allGyrData = gyr;
-            return 0;
+            return new double[]{0, 0};
         }
         allAccData.addAll(acc);
         allGyrData.addAll(gyr);
         if(start++ < startCounter) {
-            return 0;
+            return new double[]{0, 0};
         }
         int start = allAccData.size() - startCounter * halfFrameLen;
         List<SensorDataNode> history = allAccData.subList(start, allAccData.size());
@@ -91,7 +91,7 @@ public class DataProcess {
                 if(pos > neg)
                     posOrNeg = true;
             }
-            return ang;
+            return new double[]{0, 0};
         }
         else {
 //            double[] tmp = new double[verticalGyrList.size()/10];
@@ -109,29 +109,31 @@ public class DataProcess {
             }
             Complex[] res = FFT.FFTTransform(tmp);
             boolean affected = false;
-            for(int i = 6; i < 1021; i++) {
-                if(res[i].re() > 30) {
+            for(int i = (int)Math.floor(tmp.length/200); i < tmp.length/2; i++) {
+                if(res[i].re() > 80 && !affected) {
                     callback.detectedWalk();
                     affected = true;
                 }
                 res[i].setRe(0);
                 res[i].setIm(0);
+                res[tmp.length - i].setRe(0);
+                res[tmp.length - i].setIm(0);
             }
             Complex[] after = FFT.ifft(res);
             for(int i = 0; i < 128; i++) {
                 ang += (after[after.length -1 - i]).re();
             }
-//            double angOrigin = 0;
-//            for(int i = 0; i < 128; i++) {
-//                angOrigin += verticalGyrList.get(1023 - i);
-//            }
             ang *= 0.01 * 180 / Math.PI;
-//            angOrigin *= 0.01 * 180 / Math.PI;
+            double angOrigin = 0;
+            for(int i = 0; i < 128; i++) {
+                angOrigin += verticalGyrList.get(verticalGyrList.size() -1 - i);
+            }
+            angOrigin *= 0.01 * 180 / Math.PI;
 //            logger.info(String.valueOf(ang) + "  " + String.valueOf(angOrigin));
             verticalGyrList = verticalGyrList.subList(halfFrameLen, verticalGyrList.size());
-            if(affected)
-                ang = ang + (posOrNeg ? -1 : 1);
-            return ang;
+//            if(affected)
+//                ang = ang + (posOrNeg ? -1 : 1);
+            return new double[]{ang, angOrigin};
         }
 
     }

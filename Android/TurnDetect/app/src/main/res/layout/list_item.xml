@@ -14,6 +14,11 @@
         android:layout_weight="1"
         android:layout_height="wrap_content"
         android:gravity="center"/>
+    <TextView android:id="@+id/angle_view2"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:gravity="center"/>
     <TextView android:id="@+id/large_angle_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
