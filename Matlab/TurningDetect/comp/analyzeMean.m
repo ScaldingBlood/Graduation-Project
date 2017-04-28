@@ -34,7 +34,7 @@ for i = 300 : length(data) - 200
             gyr = []; % 一步的角速度序列
             
             len = length(fea);
-            fprintf('%d %d\n ',len, i);
+%             fprintf('%d %d\n ',len, i);
             for j = 1 : len
                 acc = [acc, norm(fea(j, 2:4))];
                 gyr = [gyr, norm(fea(j, 5:7))];

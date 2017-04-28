@@ -31,7 +31,11 @@ for i = 3 : filesLen
 
     end
     figure(1);
-    plot(sumAng);
+    plot(0.1:0.1:length(sumAng)/10, sumAng);
+    axis([0 length(sumAng)/10 -20 25]);
+    set(gca,'XTick',1: 2: length(sumAng)/10, 'YTick',-25 : 5: 25);
+    xlabel('time(s)');ylabel('angle(бу)');
+    title('sum angle in 0.1s');
     hold on;
 
     len = length(sumAng);
@@ -41,14 +45,16 @@ for i = 3 : filesLen
     end
     figure(3);
     plot(res);
+    set(gca,'YTick',-200 : 20: 200);
     hold on;
     
     tmp = fft(sumAng);
     
     figure(2);
-    plot(abs(tmp));
-    axis([0 len/2 0 2000]);
-    set(gca,'XTick',[0: 10: len/2], 'YTick',[0 : 100: 2000]);
+    plot(0:10/len: (len -1)/len * 10, abs(tmp));
+    xlabel('frequency(Hz)')
+    axis([0 5 0 1200]);
+%     set(gca,'XTick',x, 'YTick',0 : 100: 1200);
     hold on;
     for k = round(len / 32) : round(len / 2)
         tmp(k) = 0;
@@ -56,12 +62,13 @@ for i = 3 : filesLen
     end
     
     figure(2);
-    plot(abs(tmp));
+    plot(0:10/len: (len -1)/len * 10, abs(tmp));
     hold off;
     
     figure(1);
     sumAngTmp = real(ifft(tmp));
-    plot(sumAngTmp);
+    plot(0.1:0.1:length(sumAng)/10, sumAngTmp);
+    legend('before process','after process');
     hold off;
     
     res = [];
