@@ -32,13 +32,13 @@ for i = 1: size(vectors,1)
 %     hold on;
 %     title('acc');
 % 
-%     subplot(3, 3, 2);
-%     plot((1: N/2), accVY(1: N/2));
-%     hold on;
-%     title('accV');
-%     
-    subplot(2, 1, 1);
-    plot((0: N/2 -1), accHY(1: N/2));
+    subplot(2, 2, 1);
+    plot((0: N/2 -1), accVY(1: N/2), '-*');
+    hold on;
+    title('accV');
+    
+    subplot(2, 2, 2);
+    plot((0: N/2 -1), accHY(1: N/2), '-*');
     hold on;
     title('accH');
     
@@ -47,16 +47,16 @@ for i = 1: size(vectors,1)
 %     hold on;
 %     title('gyr');
     
-    subplot(2, 1, 2);
+    subplot(2, 2, 3);
     plot((0: N/2 -1), gyrVY(1: N/2), '-*');
     hold on;
 %     set(gca,'XTick',f);
     title('gyrV');
-%     
-%     subplot(3, 3, 6);
-%     plot((1: N/2), gyrHY(1: N/2));
-%     hold on;
-%     title('gyrH');
+    
+    subplot(2, 2, 4);
+    plot((0: N/2 -1), gyrHY(1: N/2), '-*');
+    hold on;
+    title('gyrH');
 %     
 %     subplot(3, 3, 7);
 %     plot((2: N/2), magxY(2: N/2));

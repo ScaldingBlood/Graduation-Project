@@ -99,6 +99,7 @@ end
 % hold off;
 % plot(tmp(4: length(tmp))./100, res1);
 plot(reaAcc, '*-');
+ylim([-1,1]);
 hold on;
 % plot(tmp(4: length(tmp)), res2);
 plot(resGyr, '*-');

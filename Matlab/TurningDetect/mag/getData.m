@@ -20,9 +20,9 @@ for i = 3 : filesLen
         vector(2:4) = gravity(1:3);
         vectors = [vectors; vector];
     end
-    res = process(vectors, files(i).name);
-%     res2 = calMagAng(vectors);
-    fprintf('sum = %d \n', res);
+%     res = process(vectors, files(i).name);
+    res2 = calMagAng(vectors);
+%     fprintf('sum = %d \n', res);
     fprintf('sum2 = %d \n', res2);
 end
 
