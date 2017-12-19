@@ -110,12 +110,12 @@ public class MainActivity extends AppCompatActivity {
                 msg.what = 3;
                 handler.sendMessage(msg);
                 dialog.setProgress(1);
-                dialog.setMax(10);
+                dialog.setMax(2);
                 while(true) {
                     if(i > 10)
                         break;
                     try {
-                        Thread.sleep(1000);
+                        Thread.sleep(256);
                         dialog.incrementProgressBy(1);
                         i++;
                     } catch(InterruptedException e) {
@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
         }.start();
     }
 
-    private Handler handler = new Handler() {
+    private  Handler handler = new Handler() {
         public void handleMessage(android.os.Message msg) {
             if(msg.what == 1) {
                 turnText.setText(String.valueOf(turnCount));

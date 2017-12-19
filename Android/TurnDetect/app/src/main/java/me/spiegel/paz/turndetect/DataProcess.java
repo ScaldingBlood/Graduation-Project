@@ -78,7 +78,7 @@ public class DataProcess {
                     / gravity.module());
         }
 
-        if(verticalGyrList.size() < 8 * halfFrameLen) { // 8*128=1024
+        if(verticalGyrList.size() < 2 * halfFrameLen) { // 8*128=1024 2*128=256
             if(verticalGyrList.size() == 7 * halfFrameLen) { // judge left or right, in order to adjust the angle.
                 int neg = 0;
                 int pos = 0;
@@ -109,8 +109,8 @@ public class DataProcess {
             }
             Complex[] res = FFT.FFTTransform(tmp);
             boolean affected = false;
-            for(int i = (int)Math.floor(tmp.length/200); i < tmp.length/2; i++) {
-                if(res[i].re() > 80 && !affected) {
+            for(int i = (int)Math.floor(tmp.length/200); i <= tmp.length/2; i++) {
+                if(res[i].re() > 18 && !affected) {
                     callback.detectedWalk();
                     affected = true;
                 }

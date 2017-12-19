@@ -54,7 +54,7 @@ public class TurnJudger {
                 smallWindowOrigin.remove(0);
 
                 featureReady.angleCallback(new double[]{res, resOrigin});
-                if(Math.abs(res) > 65) {
+                if(Math.abs(res) > 60) {
                     lastFlag = 0;
                     stopCountS = 0;
                     if(!stopS) {
